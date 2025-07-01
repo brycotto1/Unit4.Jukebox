@@ -8,9 +8,18 @@ export const createPlaylistTrack = async (playlistId, trackId) => {
     RETURNING *;
   `;
 
-  console.log(`playlist:` + playlistId, `track:` + trackId);
-
   const {rows: [playlistTrack]} = await db.query(sql, [playlistId, trackId]);
-  console.log(playlistTrack);
   return playlistTrack;
+}
+
+export const getTracksByPlaylistID = async (playlistId) => {
+  const sql = `
+    SELECT * FROM tracks
+    JOIN playlists_tracks on tracks.id = playlists_tracks.track_id
+    JOIN playlists on playlists.id = playlists_tracks.playlist_id
+    WHERE playlists.id = $1;
+  `;
+
+  const {rows: tracks} = await db.query(sql, [playlistId]);
+  return tracks;
 }
